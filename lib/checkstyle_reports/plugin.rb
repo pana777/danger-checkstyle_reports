@@ -61,6 +61,11 @@ module Danger
     # @return [Array<String>] a collection of relative paths
     attr_reader :reported_files
 
+    # The current file name
+    #
+    # @return [String] file name
+    attr_reader :current_file_name
+
     # Report errors based on the given xml file if needed
     #
     # @param [String] xml_file which contains checkstyle results to be reported
@@ -80,6 +85,8 @@ module Danger
       files = parse_xml(xml_file, modified_files_only)
 
       @reported_files = files.map(&:relative_path)
+
+      @current_file_name = File.basename(xml_file, ".*")
 
       do_comment(files, modified_lines_only) unless files.empty?
     end
@@ -170,14 +177,14 @@ module Danger
     def summary_table(files, base_severity, modified_lines_only)
 
       if files.empty?
-        return "### Checkstyle Report found #{files.length} issues ✅"
+        return "### Checkstyle Report found #{files.length} issues in #{self.current_file_name}"
       else
         return markdown_table(files, base_severity, modified_lines_only)
       end
     end
 
     def markdown_table(files, base_severity, modified_lines_only)
-      table = "### Checkstyle Report found #{files.length} issues ❌\n\n"
+      table = "### Checkstyle found #{files.length} issues in #{self.current_file_name}\n\n"
       table += "| File | Rule |\n"
       table += "| ---- | ---- |\n"
 
