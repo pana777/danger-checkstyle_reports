@@ -178,8 +178,8 @@ module Danger
 
     def markdown_table(files, base_severity, modified_lines_only)
       table = "### Checkstyle Report found #{files.length} issues ❌\n\n"
-      table += "| File | Line | Rule |\n"
-      table += "| ---- | ---- | ---- |\n"
+      table += "| File | Rule |\n"
+      table += "| ---- | ---- |\n"
 
       return files.reduce(table) { |acc, file| acc << table_row(file, base_severity, modified_lines_only) }
     end
@@ -196,7 +196,7 @@ module Danger
           next unless e.line_number >= linenumbers[:from] && e.line_number <= linenumbers[:to]
         end
 
-        entries += "| `#{f.relative_path}` | #{e.line_number} | #{e.html_unescaped_message} |\n"
+        entries += "| `#{f.relative_path}:#{e.line_number}` | #{e.html_unescaped_message} |\n"
       end
       return entries
     end
