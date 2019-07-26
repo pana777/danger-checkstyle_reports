@@ -178,8 +178,8 @@ module Danger
 
     def markdown_table(files, base_severity, modified_lines_only)
       table = "### Checkstyle Report found #{files.length} issues ❌\n\n"
-      table << "| File | Line | Rule |\n"
-      table << "| ---- | ---- | ---- |\n"
+      table += "| File | Line | Rule |\n"
+      table += "| ---- | ---- | ---- |\n"
 
       return files.reduce(table) { |acc, file| acc << table_row(file, base_severity, modified_lines_only) }
     end
