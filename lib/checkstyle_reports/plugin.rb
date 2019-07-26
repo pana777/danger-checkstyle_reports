@@ -184,7 +184,7 @@ module Danger
       return files.reduce(table) { |acc, file| acc << table_row(file, base_severity, modified_lines_only) }
     end
 
-    def table_row(file, base_severity, modified_lines_only)
+    def table_row(f, base_severity, modified_lines_only)
       entries = ""
       file.errors.each do |e|
 
@@ -196,7 +196,7 @@ module Danger
           next unless e.line_number >= linenumbers[:from] && e.line_number <= linenumbers[:to]
         end
 
-        entries << "| `#{file.relative_path}` | #{e.line_number} | #{e.html_unescaped_message} |\n"
+        entries << "| `#{f.relative_path}` | #{e.line_number} | #{e.html_unescaped_message} |\n"
         puts entries
       end
       return entries
