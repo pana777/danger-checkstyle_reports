@@ -177,14 +177,14 @@ module Danger
     def summary_table(files, base_severity, modified_lines_only)
 
       if files.empty?
-        return "### Checkstyle Report found #{files.length} issues in #{self.current_file_name}"
+        return "### #{self.current_file_name}: Report found #{files.length} issues"
       else
         return markdown_table(files, base_severity, modified_lines_only)
       end
     end
 
     def markdown_table(files, base_severity, modified_lines_only)
-      table = "### Checkstyle found #{files.length} issues in #{self.current_file_name}\n\n"
+      table = "###  #{self.current_file_name}: Report found #{files.length} issues\n\n"
       table += "| File | Rule |\n"
       table += "| ---- | ---- |\n"
 
