@@ -167,6 +167,40 @@ module Danger
       files
     end
 
+    def summary_table(files, base_severity, modified_lines_only)
+
+      if files.empty?
+        return "### Checkstyle Report found #{files.length} issues ✅"
+      else
+        return markdown_table(files, base_severity, modified_lines_only)
+      end
+    end
+
+    def markdown_table(files, base_severity, modified_lines_only)
+      table = "### Checkstyle Report found #{files.length} issues ❌\n\n"
+      table << "| File | Line | Rule |\n"
+      table << "| ---- | ---- | ---- |\n"
+
+      return files.reduce(table) { |acc, file| acc << table_row(file, base_severity, modified_lines_only) }
+    end
+
+    def table_row(file, base_severity, modified_lines_only)
+      entries = ""
+      file.errors.each do |e|
+
+        next unless base_severity <= e.severity
+        difffile = git.diff_for_file(f.relative_path)
+        if modified_lines_only && !difffile.nil?
+          linearray = difffile.patch.split("\n").map { |l| l + "\n" }
+          linenumbers = find_position_in_diff(linearray, difffile.path)
+          next unless e.line_number >= linenumbers[:from] && e.line_number <= linenumbers[:to]
+        end
+
+        entries << "| `#{file.relative_path}` | #{e.line_number} | #{e.html_unescaped_message} |\n"
+      end
+      return entries
+    end
+
     # Comment errors based on the given xml file to VCS
     #
     # @param [Array<FoundFile>] files which contains checkstyle results to be reported
@@ -175,24 +209,24 @@ module Danger
     def do_comment(files, modified_lines_only)
       base_severity = CheckstyleReports::Severity.new(min_severity)
 
-      files.each do |f|
-        f.errors.each do |e|
-          # check severity
-          next unless base_severity <= e.severity
+      if inline_comment
+        files.each do |f|
+          f.errors.each do |e|
+            # check severity
+            next unless base_severity <= e.severity
 
-          difffile = git.diff_for_file(f.relative_path)
-          if modified_lines_only && !difffile.nil?
-            linearray = difffile.patch.split("\n").map { |l| l + "\n" }
-            linenumbers = find_position_in_diff(linearray, difffile.path)
-            next unless e.line_number >= linenumbers[:from] && e.line_number <= linenumbers[:to]
-          end
+            difffile = git.diff_for_file(f.relative_path)
+            if modified_lines_only && !difffile.nil?
+              linearray = difffile.patch.split("\n").map { |l| l + "\n" }
+              linenumbers = find_position_in_diff(linearray, difffile.path)
+              next unless e.line_number >= linenumbers[:from] && e.line_number <= linenumbers[:to]
+            end
 
-          if inline_comment
-            self.public_send(report_method, e.html_unescaped_message, file: f.relative_path, line: e.line_number)
-          else
             self.public_send(report_method, "#{f.relative_path}: #{e.html_unescaped_message} at #{e.line_number}")
           end
         end
+      else
+        markdown(summary_table(files, base_severity, modified_lines_only))
       end
     end
   end
