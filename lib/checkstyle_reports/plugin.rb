@@ -186,7 +186,7 @@ module Danger
 
     def table_row(f, base_severity, modified_lines_only)
       entries = ""
-      file.errors.each do |e|
+      f.errors.each do |e|
 
         next unless base_severity <= e.severity
         difffile = git.diff_for_file(f.relative_path)
