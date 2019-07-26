@@ -197,6 +197,7 @@ module Danger
         end
 
         entries << "| `#{file.relative_path}` | #{e.line_number} | #{e.html_unescaped_message} |\n"
+        puts entries
       end
       return entries
     end
@@ -222,7 +223,7 @@ module Danger
               next unless e.line_number >= linenumbers[:from] && e.line_number <= linenumbers[:to]
             end
 
-            self.public_send(report_method, "#{f.relative_path}: #{e.html_unescaped_message} at #{e.line_number}")
+            self.public_send(report_method, e.html_unescaped_message, file: f.relative_path, line: e.line_number)
           end
         end
       else
