@@ -196,8 +196,7 @@ module Danger
           next unless e.line_number >= linenumbers[:from] && e.line_number <= linenumbers[:to]
         end
 
-        entries << "| `#{f.relative_path}` | #{e.line_number} | #{e.html_unescaped_message} |\n"
-        puts entries
+        entries += "| `#{f.relative_path}` | #{e.line_number} | #{e.html_unescaped_message} |\n"
       end
       return entries
     end
