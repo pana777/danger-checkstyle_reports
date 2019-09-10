@@ -73,6 +73,7 @@ module Danger
     # @param [Boolean] modified_lines_only only report modified lines
     # @return [void] void
     def report(xml_file, modified_files_only: true, modified_lines_only: true)
+      puts " test aaaa the file  " + xml_file
       raise "File path must not be empty" if xml_file.empty?
       raise "File not found" unless File.exist?(xml_file)
 
